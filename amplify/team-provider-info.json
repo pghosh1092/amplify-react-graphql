@@ -15,6 +15,9 @@
       "auth": {
         "amplifyappbeddee15": {},
         "userPoolGroups": {}
+      },
+      "api": {
+        "amplifyapp": {}
       }
     }
   }
