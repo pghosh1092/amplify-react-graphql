@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
-import { API } from "aws-amplify";
+import { API, graphqlOperation } from "aws-amplify";
 import {
   Button,
   Flex,
@@ -16,13 +16,56 @@ import {
   createNote as createNoteMutation,
   deleteNote as deleteNoteMutation,
 } from "./graphql/mutations";
+import {
+  onCreateNote as createNoteSub,
+  onDeleteNote as deleteNoteSub
+} from './graphql/subscriptions';
+
 
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
+  const stateRef = useRef(notes);
 
   useEffect(() => {
     fetchNotes();
   }, []);
+
+  useEffect(()=> {
+    stateRef.current = notes;
+  }, [notes])
+
+  useEffect(() => {
+    // Subscribe to creation of Todo
+    const createNoteSubscription = API.graphql(
+      graphqlOperation(createNoteSub)
+     ).subscribe({
+        next: ({provider, value }) => {
+          const response = value.data.onCreateNote;
+          const tempNotes = stateRef.current;
+          tempNotes.push(response);
+          setNotes([...tempNotes]);
+        },
+        error: (error) => console.warn(error)
+     })
+
+     const deleteNoteSubscription = API.graphql(
+      graphqlOperation(deleteNoteSub)
+     ).subscribe({
+        next: ({provider, value }) => {
+          console.log(value.data)
+          const response = value.data.onDeleteNote;
+          const newNotes = stateRef.current.filter((note) => note.id !== response.id);
+          setNotes(newNotes);
+        },
+        error: (error) => console.warn(error)
+     })
+
+       return () => {
+         // Stop receiving data updates from the subscription
+         createNoteSubscription.unsubscribe()
+         deleteNoteSubscription.unsubscribe()
+       }
+  }, [])
 
   async function fetchNotes() {
     const apiData = await API.graphql({ query: listNotes });
@@ -41,7 +84,6 @@ const App = ({ signOut }) => {
       query: createNoteMutation,
       variables: { input: data },
     });
-    fetchNotes();
     event.target.reset();
   }
 
