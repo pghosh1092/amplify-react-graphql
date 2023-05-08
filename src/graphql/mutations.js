@@ -43,3 +43,57 @@ export const deleteNote = /* GraphQL */ `
     }
   }
 `;
+export const createWhiteboard = /* GraphQL */ `
+  mutation CreateWhiteboard($input: CreateWhiteboardInput!) {
+    createWhiteboard(input: $input) {
+      id
+      content
+      context_data
+      app_created_by
+      app_last_updated_by
+      created_at
+      external_share_enabled
+      external_share_hash
+      name
+      product_type
+      tenant_id_str
+      updated_at
+    }
+  }
+`;
+export const updateWhiteboard = /* GraphQL */ `
+  mutation UpdateWhiteboard($input: UpdateWhiteboardInput!) {
+    updateWhiteboard(input: $input) {
+      id
+      content
+      context_data
+      app_created_by
+      app_last_updated_by
+      created_at
+      external_share_enabled
+      external_share_hash
+      name
+      product_type
+      tenant_id_str
+      updated_at
+    }
+  }
+`;
+export const deleteWhiteboard = /* GraphQL */ `
+  mutation DeleteWhiteboard($input: DeleteWhiteboardInput!) {
+    deleteWhiteboard(input: $input) {
+      id
+      content
+      context_data
+      app_created_by
+      app_last_updated_by
+      created_at
+      external_share_enabled
+      external_share_hash
+      name
+      product_type
+      tenant_id_str
+      updated_at
+    }
+  }
+`;
